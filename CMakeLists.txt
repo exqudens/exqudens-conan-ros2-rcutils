@@ -39,11 +39,11 @@ if("msvc-16-x64-x64" IN_LIST "PRESET_NAME_ELEMENTS")
     find_program(CONAN_COMMAND NAMES "conan.exe" PATHS ENV CONAN_PATH ENV PATH REQUIRED NO_CACHE NO_DEFAULT_PATH)
 elseif("gcc" IN_LIST PRESET_NAME_ELEMENTS)
     if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../common/gcc-toolchain.cmake")
-        find_file(COMPILER_PATH NAMES "gcc" PATHS ENV GCC_PATH ENV PATH REQUIRED NO_CACHE NO_DEFAULT_PATH)
+        find_file(compilerFile NAMES "gcc" PATHS ENV GCC_PATH ENV PATH REQUIRED NO_CACHE NO_DEFAULT_PATH)
         set_gnu_toolchain(TOOLCHAIN_CONTENT
             PROCESSOR "x86_64"
             OS "${CMAKE_HOST_SYSTEM_NAME}"
-            PATH "${COMPILER_PATH}"
+            PATH "${compilerFile}"
             SET_CMAKE_SYSTEM_NAME "FALSE"
             OUTPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/../common/gcc-toolchain.cmake"
         )
@@ -182,6 +182,26 @@ set(PROJECT_BINARY_DIR_RELATIVE "${PROJECT_BINARY_DIR}")
 cmake_path(RELATIVE_PATH "PROJECT_BINARY_DIR_RELATIVE" BASE_DIRECTORY "${PROJECT_SOURCE_DIR}")
 
 # project specific
+if(NOT EXISTS "${PROJECT_BINARY_DIR}/../common/py-env")
+    find_file(pythonFile NAMES "py.exe" "python.exe" "python" PATHS ENV PYTHON_PATH ENV PATH REQUIRED NO_CACHE NO_DEFAULT_PATH)
+    execute_process(
+        COMMAND "${pythonFile}" "-m" "venv" "${PROJECT_BINARY_DIR_RELATIVE}/../common/py-env"
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+        COMMAND_ECHO "STDOUT"
+    )
+    find_file(pythonEnvFile NAMES "python.exe" "python" PATHS "${PROJECT_BINARY_DIR}/../common/py-env/Scripts" "${PROJECT_BINARY_DIR}/../common/py-env/bin" REQUIRED NO_CACHE NO_DEFAULT_PATH)
+    execute_process(
+        COMMAND "${pythonEnvFile}" "-m" "pip" "install" "empy==4.1"
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+        COMMAND_ECHO "STDOUT"
+    )
+endif()
+
+find_file(pythonEnvFile NAMES "python.exe" "python" PATHS "${PROJECT_BINARY_DIR}/../common/py-env/Scripts" "${PROJECT_BINARY_DIR}/../common/py-env/bin" REQUIRED NO_CACHE NO_DEFAULT_PATH)
+cmake_path(GET "pythonEnvFile" PARENT_PATH pythonEnvFileDir)
+
+set(Python3_ROOT_DIR "${pythonEnvFileDir}" CACHE PATH "..." FORCE)
+
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}")
 
 macro(ament_python_install_package)
@@ -204,9 +224,11 @@ endmacro()
 
 add_subdirectory("${PROJECT_BINARY_DIR_RELATIVE}/${PROJECT_NAME_LOWER}-${PROJECT_VERSION_NOTWEAK}")
 
-#[[add_custom_target("cmake-install"
+message("AAA: '${CMAKE_INSTALL_PREFIX}'")
+
+add_custom_target("cmake-install"
     COMMAND "${CMAKE_COMMAND}" --install "${PROJECT_BINARY_DIR}" --prefix "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME_LOWER}"
-    #DEPENDS "ddsc"
+    DEPENDS "${PROJECT_NAME}"
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
     USES_TERMINAL
     VERBATIM
@@ -223,4 +245,4 @@ add_custom_target("conan-export"
     DEPENDS "cmake-install"
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
     VERBATIM
-)]]
+)
