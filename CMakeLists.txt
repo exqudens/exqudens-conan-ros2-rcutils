@@ -224,8 +224,6 @@ endmacro()
 
 add_subdirectory("${PROJECT_BINARY_DIR_RELATIVE}/${PROJECT_NAME_LOWER}-${PROJECT_VERSION_NOTWEAK}")
 
-message("AAA: '${CMAKE_INSTALL_PREFIX}'")
-
 add_custom_target("cmake-install"
     COMMAND "${CMAKE_COMMAND}" --install "${PROJECT_BINARY_DIR}" --prefix "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME_LOWER}"
     DEPENDS "${PROJECT_NAME}"
