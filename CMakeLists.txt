@@ -157,7 +157,7 @@ if(NOT EXISTS "${CMAKE_DOWNLOADS}/${PROJECT_NAME_LOWER}-${PROJECT_VERSION_NOTWEA
     message(STATUS "download ...")
     file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/tmp")
     file(DOWNLOAD
-        "https://github.com/ros2/rcutils/archive/refs/tags/${PROJECT_VERSION_NOTWEAK}.zip"
+        "https://github.com/ros2/${PROJECT_NAME_LOWER}/archive/refs/tags/${PROJECT_VERSION_NOTWEAK}.zip"
         "${PROJECT_BINARY_DIR}/tmp/${PROJECT_NAME_LOWER}-${PROJECT_VERSION_NOTWEAK}.zip"
         EXPECTED_MD5 "40e051477a98796385a3c799fe31b1dc"
         STATUS downloadStatus
@@ -181,7 +181,7 @@ endif()
 set(PROJECT_BINARY_DIR_RELATIVE "${PROJECT_BINARY_DIR}")
 cmake_path(RELATIVE_PATH "PROJECT_BINARY_DIR_RELATIVE" BASE_DIRECTORY "${PROJECT_SOURCE_DIR}")
 
-# project specific
+# project specific before "add_subdirectory"
 if(NOT EXISTS "${PROJECT_BINARY_DIR}/../common/py-env")
     find_file(pythonFile NAMES "py.exe" "python.exe" "python" PATHS ENV PYTHON_PATH ENV PATH REQUIRED NO_CACHE NO_DEFAULT_PATH)
     execute_process(
