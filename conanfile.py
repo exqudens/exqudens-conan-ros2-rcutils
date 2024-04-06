@@ -27,7 +27,7 @@ class ConanConfiguration(ConanFile):
 
     def package_info(self):
         try:
-            self.cpp_info.names["cmake_find_package"] = 'ros2-' + self.name
+            self.cpp_info.names["cmake_find_package"] = 'ros2-' + self.name.split('-', 1)[1]
             self.cpp_info.libs = tools.collect_libs(self)
         except Exception as e:
             logging.error(e, exc_info=True)
