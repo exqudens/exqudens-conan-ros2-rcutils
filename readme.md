@@ -1,5 +1,6 @@
 # ros2-rcutils
 
+URL: [ros2/rcutils](https://github.com/ros2/rcutils.git)
 Version info: [ros2.repos](https://github.com/ros2/ros2/blob/iron-release/ros2.repos)
 
 ## How To Build
